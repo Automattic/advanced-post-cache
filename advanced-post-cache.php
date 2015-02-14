@@ -32,12 +32,6 @@ class Advanced_Post_Cache {
 	var $found_posts = false; // The result of the FOUND_ROWS() query
 	var $cache_func = 'wp_cache_add'; // Turns to set if there seems to be inconsistencies
 
-/*
-	// PHP4 Constructor
-	function Advanced_Post_Cache() {
-		$this->__construct();
-	}
-*/
 	function __construct() {
 		// Specific to certain Memcached Object Cache plugins
 		if ( function_exists( 'wp_cache_add_group_prefix_map' ) ) {
