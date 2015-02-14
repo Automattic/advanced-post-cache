@@ -39,7 +39,10 @@ class Advanced_Post_Cache {
 	}
 */
 	function __construct() {
-		wp_cache_add_group_prefix_map( $this->CACHE_GROUP_PREFIX, 'advanced_post_cache' );
+		// Specific to certain Memcached Object Cache plugins
+		if ( function_exists( 'wp_cache_add_group_prefix_map' ) ) {
+			wp_cache_add_group_prefix_map( $this->CACHE_GROUP_PREFIX, 'advanced_post_cache' );
+		}
 
 		$this->setup_for_blog();
 
