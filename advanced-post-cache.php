@@ -85,7 +85,7 @@ class Advanced_Post_Cache {
 		// Bail on autosave
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 			return;
-		
+
 		// We already flushed once this page load, and have not put anything into the cache since.
 		// OTHER processes may have put something into the cache!  In theory, this could cause stale caches.
 		// We do this since clean_post_cache() (which fires the action this method attaches to) is called RECURSIVELY for all descendants.
@@ -104,7 +104,7 @@ class Advanced_Post_Cache {
 
 /* Cache Reading/Priming Functions */
 
-	/** 
+	/**
 	 * Determines (by hash of SQL) if query is cached.
 	 * If cached: Return query of needed post IDs.
 	 * Otherwise: Returns query unchanged.
@@ -128,10 +128,10 @@ class Advanced_Post_Cache {
 		// Query is cached
 		if ( $this->found_posts && is_array( $this->all_post_ids ) ) {
 			$this->cached_posts = array_filter( wp_cache_get_multi( array( 'posts' => $this->all_post_ids ) ) );
-			foreach ( $this->cached_posts as $post ) { 
+			foreach ( $this->cached_posts as $post ) {
 				if ( !empty( $post ) )
 					$this->cached_post_ids[] = $post->ID;
-			} 
+			}
 			$uncached_post_ids = array_diff( $this->all_post_ids, $this->cached_post_ids );
 
 			if ( $uncached_post_ids )
@@ -142,7 +142,7 @@ class Advanced_Post_Cache {
 		return $sql;
 	}
 
-	/** 
+	/**
 	 * If cached: Collates posts returned by SQL query with posts that are already cached.  Orders correctly.
 	 * Otherwise: Primes cache with data for current posts WP_Query.
 	 */
