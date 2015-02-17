@@ -124,7 +124,17 @@ class Advanced_Post_Cache {
 
 		// Query is cached
 		if ( $this->found_posts && is_array( $this->all_post_ids ) ) {
-			$this->cached_posts = array_filter( wp_cache_get_multi( array( 'posts' => $this->all_post_ids ) ) );
+			if ( function_exists( 'wp_cache_get_multi' ) ) {
+				$this->cached_posts = wp_cache_get_multi( array( 'posts' => $this->all_post_ids ) );
+			} else {
+				$this->cached_posts = array();
+				foreach ( $this->all_post_ids as $pid ) {
+					$this->cached_posts[] = wp_cache_get( $pid, 'posts' );
+				}
+			}
+
+			$this->cached_posts = array_filter( $this->cached_posts );
+
 			foreach ( $this->cached_posts as $post ) {
 				if ( !empty( $post ) )
 					$this->cached_post_ids[] = $post->ID;
