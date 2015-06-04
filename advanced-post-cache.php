@@ -32,14 +32,11 @@ class Advanced_Post_Cache {
 	var $found_posts = false; // The result of the FOUND_ROWS() query
 	var $cache_func = 'wp_cache_add'; // Turns to set if there seems to be inconsistencies
 
-/*
-	// PHP4 Constructor
-	function Advanced_Post_Cache() {
-		$this->__construct();
-	}
-*/
 	function __construct() {
-		wp_cache_add_group_prefix_map( $this->CACHE_GROUP_PREFIX, 'advanced_post_cache' );
+		// Specific to certain Memcached Object Cache plugins
+		if ( function_exists( 'wp_cache_add_group_prefix_map' ) ) {
+			wp_cache_add_group_prefix_map( $this->CACHE_GROUP_PREFIX, 'advanced_post_cache' );
+		}
 
 		$this->setup_for_blog();
 
@@ -85,7 +82,7 @@ class Advanced_Post_Cache {
 		// Bail on autosave
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 			return;
-		
+
 		// We already flushed once this page load, and have not put anything into the cache since.
 		// OTHER processes may have put something into the cache!  In theory, this could cause stale caches.
 		// We do this since clean_post_cache() (which fires the action this method attaches to) is called RECURSIVELY for all descendants.
@@ -104,7 +101,7 @@ class Advanced_Post_Cache {
 
 /* Cache Reading/Priming Functions */
 
-	/** 
+	/**
 	 * Determines (by hash of SQL) if query is cached.
 	 * If cached: Return query of needed post IDs.
 	 * Otherwise: Returns query unchanged.
@@ -127,11 +124,21 @@ class Advanced_Post_Cache {
 
 		// Query is cached
 		if ( $this->found_posts && is_array( $this->all_post_ids ) ) {
-			$this->cached_posts = array_filter( wp_cache_get_multi( array( 'posts' => $this->all_post_ids ) ) );
-			foreach ( $this->cached_posts as $post ) { 
+			if ( function_exists( 'wp_cache_get_multi' ) ) {
+				$this->cached_posts = wp_cache_get_multi( array( 'posts' => $this->all_post_ids ) );
+			} else {
+				$this->cached_posts = array();
+				foreach ( $this->all_post_ids as $pid ) {
+					$this->cached_posts[] = wp_cache_get( $pid, 'posts' );
+				}
+			}
+
+			$this->cached_posts = array_filter( $this->cached_posts );
+
+			foreach ( $this->cached_posts as $post ) {
 				if ( !empty( $post ) )
 					$this->cached_post_ids[] = $post->ID;
-			} 
+			}
 			$uncached_post_ids = array_diff( $this->all_post_ids, $this->cached_post_ids );
 
 			if ( $uncached_post_ids )
@@ -142,7 +149,7 @@ class Advanced_Post_Cache {
 		return $sql;
 	}
 
-	/** 
+	/**
 	 * If cached: Collates posts returned by SQL query with posts that are already cached.  Orders correctly.
 	 * Otherwise: Primes cache with data for current posts WP_Query.
 	 */
