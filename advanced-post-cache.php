@@ -136,8 +136,9 @@ class Advanced_Post_Cache {
 			$this->cached_posts = array_filter( $this->cached_posts );
 
 			foreach ( $this->cached_posts as $post ) {
-				if ( !empty( $post ) )
+				if ( $post instanceof WP_Post ){
 					$this->cached_post_ids[] = $post->ID;
+				}	
 			}
 			$uncached_post_ids = array_diff( $this->all_post_ids, $this->cached_post_ids );
 
@@ -160,9 +161,12 @@ class Advanced_Post_Cache {
 				$posts[] = $post;
 
 			foreach ( $posts as $post ) {
-				$loc = array_search( $post->ID, $this->all_post_ids );
-				if ( is_numeric( $loc ) && -1 < $loc )
-					$collated_posts[$loc] = $post;
+				if ( $post instanceof WP_Post ){
+					$loc = array_search( $post->ID, $this->all_post_ids );
+					if ( is_numeric( $loc ) && -1 < $loc ){
+						$collated_posts[$loc] = $post;
+					}
+				}
 			}
 			ksort( $collated_posts );
 			return array_map( 'get_post', array_values( $collated_posts ) );
