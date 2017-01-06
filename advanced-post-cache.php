@@ -184,7 +184,7 @@ class Advanced_Post_Cache {
 	/**
 	 * If $limits is empty, WP_Query never calls the found_rows stuff, so we set $this->found_rows to 'NA'
 	 */
-	function post_limits_request( $limits, &$query ) {
+	function post_limits_request( $limits, $query ) {
 		if ( empty( $limits ) || ( isset( $query->query_vars['no_found_rows'] ) && $query->query_vars['no_found_rows'] ) )
 			$this->found_posts = 'NA';
 		else
