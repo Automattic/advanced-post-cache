@@ -43,7 +43,7 @@ class Advanced_Post_Cache {
 		add_action( 'switch_blog', array( $this, 'setup_for_blog' ), 10, 2 );
 
 		add_filter( 'posts_request', array( &$this, 'posts_request' ) ); // Short circuits if cached
-		add_filter( 'posts_results', array( &$this, 'posts_results' ), 10, 2 ); // Collates if cached, primes cache if not
+		add_filter( 'posts_results', array( &$this, 'posts_results' ) ); // Collates if cached, primes cache if not
 
 		add_filter( 'post_limits_request', array( &$this, 'post_limits_request' ), 999, 2 ); // Checks to see if we need to worry about found_posts
 
@@ -153,7 +153,7 @@ class Advanced_Post_Cache {
 	 * If cached: Collates posts returned by SQL query with posts that are already cached.  Orders correctly.
 	 * Otherwise: Primes cache with data for current posts WP_Query.
 	 */
-	function posts_results( $posts, $query ) {
+	function posts_results( $posts ) {
 		if ( $this->found_posts && is_array( $this->all_post_ids ) ) { // is cached
 			$collated_posts = array();
 			foreach ( $this->cached_posts as $post )
@@ -165,8 +165,6 @@ class Advanced_Post_Cache {
 					$collated_posts[$loc] = $post;
 			}
 			ksort( $collated_posts );
-			// Some plugins incorrectly expect this to be set on `the_posts` or they re-run the now empty query :( - https://wp.me/p9F6qB-3Ti
-			$query->post_count = count( $collated_posts );
 			return array_map( 'get_post', array_values( $collated_posts ) );
 		}
 
