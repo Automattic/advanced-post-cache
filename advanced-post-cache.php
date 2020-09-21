@@ -227,8 +227,15 @@ class Advanced_Post_Cache {
 			return $found_posts;
 		}
 
-		if ( $this->found_posts && is_array( $this->all_post_ids ) ) // is cached
+		// Is cached
+		if ( $this->found_posts && is_array( $this->all_post_ids ) ) {
+			// Ensure no limit queries counts the post IDs array.
+			if ( 'NA' === $this->found_posts ) {
+				return count( $this->all_post_ids );
+			}
+
 			return (int) $this->found_posts;
+		}
 
 		call_user_func( $this->cache_func, "{$this->cache_key}_found", (int) $found_posts, $this->cache_group );
 		$this->need_to_flush_cache = true;
