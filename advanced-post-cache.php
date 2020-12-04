@@ -43,7 +43,7 @@ class Advanced_Post_Cache {
 		add_action( 'switch_blog', array( $this, 'setup_for_blog' ), 10, 2 );
 
 		add_filter( 'posts_request', array( &$this, 'posts_request' ), 10, 2 ); // Short circuits if cached
-		add_filter( 'posts_results', array( &$this, 'posts_results' ), 10, 2  ); // Collates if cached, primes cache if not
+		add_filter( 'posts_results', array( &$this, 'posts_results' ), 10, 2 ); // Collates if cached, primes cache if not
 
 		add_filter( 'post_limits_request', array( &$this, 'post_limits_request' ), 999, 2 ); // Checks to see if we need to worry about found_posts
 
@@ -115,8 +115,9 @@ class Advanced_Post_Cache {
 
 		$this->cache_key = md5( $sql ); // init
 		$this->all_post_ids = wp_cache_get( $this->cache_key, $this->cache_group );
-		if ( 'NA' !== $this->found_posts )
+		if ( 'NO_FOUND_ROWS' !== $this->found_posts ) {
 			$this->found_posts = wp_cache_get( "{$this->cache_key}_found", $this->cache_group );
+		}
 
 		if ( $this->all_post_ids xor $this->found_posts )
 			$this->cache_func = 'wp_cache_set';
@@ -137,11 +138,14 @@ class Advanced_Post_Cache {
 				}
 			}
 
-			$this->cached_posts = array_filter( $this->cached_posts );
+			// wp_cache_get_multi returns `false` if either the group or the key wasn't found
+			if ( !empty( $this->cached_posts ) ) {
+				$this->cached_posts = array_filter( $this->cached_posts );
 
-			foreach ( $this->cached_posts as $post ) {
-				if ( !empty( $post ) )
-					$this->cached_post_ids[] = $post->ID;
+				foreach ( $this->cached_posts as $post ) { 
+					if ( !empty( $post ) )
+						$this->cached_post_ids[] = $post->ID;
+				}
 			}
 			$uncached_post_ids = array_diff( $this->all_post_ids, $this->cached_post_ids );
 
@@ -164,8 +168,11 @@ class Advanced_Post_Cache {
 
 		if ( $this->found_posts && is_array( $this->all_post_ids ) ) { // is cached
 			$collated_posts = array();
-			foreach ( $this->cached_posts as $post )
-				$posts[] = $post;
+			if( !empty( $this->cached_posts ) ) {
+				foreach ( $this->cached_posts as $post ){
+					$posts[] = $post;
+				}
+			}
 
 			foreach ( $posts as $post ) {
 				$loc = array_search( $post->ID, $this->all_post_ids );
@@ -190,17 +197,21 @@ class Advanced_Post_Cache {
 	}
 
 	/**
-	 * If $limits is empty, WP_Query never calls the found_rows stuff, so we set $this->found_rows to 'NA'
+	 * If $limits is empty, WP_Query never calls the found_rows stuff, so we set $this->found_posts to 'NO_LIMITS'
 	 */
 	function post_limits_request( $limits, $query ) {
 		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
 			return $limits;
 		}
 
-		if ( empty( $limits ) || ( isset( $query->query_vars['no_found_rows'] ) && $query->query_vars['no_found_rows'] ) )
-			$this->found_posts = 'NA';
-		else
+		if ( isset( $query->query_vars['no_found_rows'] ) && $query->query_vars['no_found_rows'] ) {
+			$this->found_posts = 'NO_FOUND_ROWS';
+		} elseif ( empty( $limits ) ) {
+			$this->found_posts = 'NO_LIMITS';
+		} else {
 			$this->found_posts = false; // re-init
+		}
+
 		return $limits;
 	}
 
