@@ -109,7 +109,7 @@ class Advanced_Post_Cache {
 	function posts_request( $sql, $query ) {
 		global $wpdb;
 
-		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
+		if ( is_a( $query, WP_Query ) && ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) ) {
 			return $sql;
 		}
 
@@ -158,7 +158,7 @@ class Advanced_Post_Cache {
 	 * Otherwise: Primes cache with data for current posts WP_Query.
 	 */
 	function posts_results( $posts, $query ) {
-		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
+		if ( is_a( $query, WP_Query ) && ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) ) {
 			return $posts;
 		}
 
@@ -193,7 +193,7 @@ class Advanced_Post_Cache {
 	 * If $limits is empty, WP_Query never calls the found_rows stuff, so we set $this->found_rows to 'NA'
 	 */
 	function post_limits_request( $limits, $query ) {
-		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
+		if ( is_a( $query, WP_Query ) && ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) ) {
 			return $limits;
 		}
 
@@ -209,7 +209,7 @@ class Advanced_Post_Cache {
 	 * Otherwise: Returns query unchanged.
 	 */
 	function found_posts_query( $sql, $query ) {
-		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
+		if ( is_a( $query, WP_Query ) && ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) ) {
 			return $sql;
 		}
 
@@ -223,7 +223,7 @@ class Advanced_Post_Cache {
 	 * Otherwise: Returs result unchanged
 	 */
 	function found_posts( $found_posts, $query ) {
-		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
+		if ( is_a( $query, WP_Query ) && ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) ) {
 			return $found_posts;
 		}
 
