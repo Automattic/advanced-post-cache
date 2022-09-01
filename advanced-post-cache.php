@@ -256,6 +256,10 @@ function dont_clear_advanced_post_cache() {
 add_action( 'clean_term_cache', 'clear_advanced_post_cache' );
 add_action( 'clean_post_cache', 'clear_advanced_post_cache' );
 
+add_action( 'add_post_metadata', 'clear_advanced_post_cache' );
+add_action( 'update_post_metadata', 'clear_advanced_post_cache' );
+add_action( 'delete_post_metadata', 'clear_advanced_post_cache' );
+
 // Don't clear Advanced Post Cache for a new comment - temp core hack
 // http://core.trac.wordpress.org/ticket/15565
 add_action( 'wp_updating_comment_count', 'dont_clear_advanced_post_cache' );
