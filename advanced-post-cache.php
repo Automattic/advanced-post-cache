@@ -220,7 +220,7 @@ class Advanced_Post_Cache {
 
 	/**
 	 * If cached: Returns cached result of FOUND_ROWS() query.
-	 * Otherwise: Returs result unchanged
+	 * Otherwise: Returns result unchanged
 	 */
 	function found_posts( $found_posts, $query ) {
 		if ( apply_filters( 'advanced_post_cache_skip_for_post_type', false, $query->get( 'post_type' ) ) ) {
