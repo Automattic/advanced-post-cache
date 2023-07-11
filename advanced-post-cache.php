@@ -90,6 +90,10 @@ class Advanced_Post_Cache {
 //			return;
 
 		$this->cache_incr = wp_cache_incr( 'advanced_post_cache', 1, 'cache_incrementors' );
+		// We lost the increment along the way so recreate it.
+		if ( false === $this->cache_incr ) {
+			$this->setup_for_blog();
+		}
 		if ( 10 < strlen( $this->cache_incr ) ) {
 			wp_cache_set( 'advanced_post_cache', 0, 'cache_incrementors' );
 			$this->cache_incr = 0;
