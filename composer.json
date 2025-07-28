@@ -1,6 +1,6 @@
 {
 	"name"       : "automattic/advanced-post-cache",
-	"description": "Cache post queries for WordPress",
+	"description": "[DEPRECATED] Cache post queries for WordPress",
 	"homepage"   : "http://wordpress.org/plugins/advanced-caching/",
 	"type"       : "wordpress-plugin",
 	"license"    : "GPL-2.0+",
