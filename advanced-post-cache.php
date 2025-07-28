@@ -1,8 +1,8 @@
 <?php
 
 /*
-Plugin Name: Advanced Post Caching
-Description: Cache post queries. [DISABLED - functionality moved to WordPress core]
+Plugin Name: [DEPRECATED] Advanced Post Caching
+Description: [DEPRECATED] This plugin used to cache post queries, since WordPress 6.1 caching is built-in and this plugin is no longer needed.
 Version: 0.3.0
 Requires at least: 6.1
 Author: Automattic
