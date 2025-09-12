@@ -1,6 +1,8 @@
 advanced-post-cache
 =================
 
+This repository is archived as of 2025-09-12.
+
 🛑 DEPRECATION NOTICE
 --------
 
@@ -12,7 +14,7 @@ If you're running an older version of WordPress we've prepared the [v0.2.0](http
 
 If you're installing this plugin via Composer please pin to the above tag.
 
-This repository will be archived soon.
+
 
 Overview
 --------
